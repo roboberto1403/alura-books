@@ -1,7 +1,7 @@
 import Input from '../Input';
 import styled from 'styled-components';
-import { useState } from 'react';
-import { livros } from './dadosPesquisa';
+import { useEffect, useState } from 'react';
+import { getLivros } from '../../servicos/livros';
 
 const PesquisaContainer = styled.section`
   color: #FFF;
@@ -43,8 +43,17 @@ const Resultado = styled.div`
 
 function Pesquisa() {
   const [livrosPesquisados, setLivrosPesquisados] = useState([]);
+  const [livros, setLivros] = useState([])
 
-  console.log(livrosPesquisados);
+  useEffect(() => {
+    fetchLivros()
+  }, [])
+
+  async function fetchLivros() {
+    const livrosDaAPI = await getLivros();
+    console.log(livrosDaAPI);
+    setLivros(livrosDaAPI);
+  }
 
   return (
     <PesquisaContainer>
@@ -58,14 +67,14 @@ function Pesquisa() {
       placeholder="O que você procura?" 
       onChange={evento => {
         const termoPesquisado = evento.target.value;
-        const livrosEncontrados = livros.filter(livro => livro.nome.includes(termoPesquisado.trim()))
+        const livrosEncontrados = livros.filter(livro => livro.titulo.includes(termoPesquisado.trim()))
         setLivrosPesquisados(livrosEncontrados);
           }}
       />
       {livrosPesquisados.map(livro => (
         <Resultado>
-          <img src={livro.src} alt={livro.nome} />
-          <p>{livro.nome}</p>
+          <img src={livro.src} alt={livro.titulo} />
+          <p>{livro.titulo}</p>
         </Resultado>
       ))}
     </PesquisaContainer>
